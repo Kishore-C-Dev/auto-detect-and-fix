@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: auto-detect-and-fix
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Custom application properties
+app:
+  log:
+    file-path: ${LOG_FILE_PATH:logs/app.log}
+    monitor:
+      enabled: ${LOG_MONITOR_ENABLED:true}
+      poll-interval-ms: ${LOG_POLL_INTERVAL:1000}
+      batch-size: ${LOG_BATCH_SIZE:100}
+
+  git:
+    repository-path: ${GIT_REPO_PATH:.}
+    enabled: ${GIT_ENABLED:true}
+    max-file-search-depth: ${GIT_MAX_DEPTH:10}
+
+  analysis:
+    max-stored-errors: ${MAX_STORED_ERRORS:500}
+    error-retention-hours: ${ERROR_RETENTION_HOURS:24}
+    async-analysis: ${ASYNC_ANALYSIS:true}
+
+# Logging configuration
+logging:
+  level:
+    com.example.autodetectandfix: DEBUG
+    org.eclipse.jgit: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/app.log
+    max-size: 10MB
+    max-history: 7
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,logfile
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+app:
+  log:
+    monitor:
+      poll-interval-ms: 500
+
+logging:
+  level:
+    com.example.autodetectandfix: TRACE
