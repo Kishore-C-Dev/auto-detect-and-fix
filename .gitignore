@@ -27,3 +27,6 @@ Thumbs.db
 
 # Application
 application-local.yml
+
+#Environment
+.env

@@ -182,7 +182,7 @@ app:
 ### Package Structure
 
 ```
-com.example.autodetectandfix/
+com.kc.autodetectandfix/
 ├── api/                    # REST controllers
 │   ├── ErrorMonitorController.java
 │   ├── TestController.java
@@ -260,7 +260,7 @@ Add to `application.yml`:
 ```yaml
 logging:
   level:
-    com.example.autodetectandfix: DEBUG
+    com.kc.autodetectandfix: DEBUG
 ```
 
 ## Limitations

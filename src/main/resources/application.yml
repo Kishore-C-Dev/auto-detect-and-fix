@@ -12,6 +12,20 @@ spring:
     deserialization:
       fail-on-unknown-properties: false
 
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: ${MAIL_DEBUG:false}
+
 # Custom application properties
 app:
   log:
@@ -31,14 +45,41 @@ app:
     error-retention-hours: ${ERROR_RETENTION_HOURS:24}
     async-analysis: ${ASYNC_ANALYSIS:true}
 
+  openai:
+    enabled: ${OPENAI_ENABLED:true}
+    api-key: ${OPENAI_API_KEY:}
+    api-url: ${OPENAI_API_URL:https://api.openai.com/v1/chat/completions}
+    model: ${OPENAI_MODEL:gpt-4o-mini}
+    timeout-seconds: ${OPENAI_TIMEOUT:30}
+    max-retries: ${OPENAI_MAX_RETRIES:3}
+    mock-mode: ${OPENAI_MOCK_MODE:false}
+
+  notification:
+    email:
+      enabled: ${EMAIL_NOTIFICATION_ENABLED:true}
+      from: ${EMAIL_FROM:auto-detect@example.com}
+      to: ${EMAIL_TO:admin@example.com}
+      subject-prefix: ${EMAIL_SUBJECT_PREFIX:[Error Alert]}
+      include-source-code: ${EMAIL_INCLUDE_SOURCE:true}
+      mock-mode: ${EMAIL_MOCK_MODE:false}
+
+  accounts:
+    mock-api-url: ${ACCOUNTS_API_URL:http://localhost:8080/api/mock/accounts}
+    timeout-seconds: ${ACCOUNTS_TIMEOUT:10}
+    mock-mode: ${ACCOUNTS_MOCK_MODE:true}
+
 # Logging configuration
 logging:
   level:
-    com.example.autodetectandfix: DEBUG
+    com.kc.autodetectandfix: DEBUG
+    com.kc.autodetectandfix.analysis: DEBUG
+    com.kc.autodetectandfix.git: DEBUG
     org.eclipse.jgit: INFO
     org.springframework.web: INFO
+    io.netty.resolver.dns.DnsServerAddressStreamProviders: OFF
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%wEx"
   file:
     name: logs/app.log
     max-size: 10MB
@@ -63,8 +104,8 @@ spring:
 app:
   log:
     monitor:
-      poll-interval-ms: 500
+      poll-interval-ms: 60000
 
 logging:
   level:
-    com.example.autodetectandfix: TRACE
+    com.kc.autodetectandfix: TRACE

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Detected</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .error-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .badge-CONFIG { background-color: #ff9800; color: white; }
+        .badge-DATA { background-color: #2196f3; color: white; }
+        .badge-INFRA { background-color: #9c27b0; color: white; }
+        .badge-CODE { background-color: #f44336; color: white; }
+        .badge-UNKNOWN { background-color: #757575; color: white; }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            color: #d32f2f;
+            font-size: 18px;
+            border-bottom: 2px solid #d32f2f;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .info-value {
+            color: #333;
+            word-wrap: break-word;
+        }
+        .error-message {
+            background-color: #ffebee;
+            border-left: 4px solid #d32f2f;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+        .fix-steps {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .fix-steps h3 {
+            color: #4caf50;
+            margin-top: 0;
+            font-size: 16px;
+        }
+        .fix-steps ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .fix-steps li {
+            margin-bottom: 8px;
+        }
+        .confidence {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .confidence-HIGH { background-color: #4caf50; color: white; }
+        .confidence-MEDIUM { background-color: #ff9800; color: white; }
+        .confidence-LOW { background-color: #f44336; color: white; }
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .code-line {
+            padding: 2px 0;
+        }
+        .code-line.highlight {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding-left: 10px;
+            margin-left: -10px;
+        }
+        .stack-trace {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .stack-frame {
+            color: #666;
+            padding: 2px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .code-comparison-single {
+            margin: 20px 0;
+        }
+        .code-box {
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .code-box-header {
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+        }
+        .code-box-header.error {
+            background-color: #d32f2f;
+        }
+        .code-box-header.success {
+            background-color: #4caf50;
+        }
+        .code-box-content {
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .code-box-content.error {
+            background-color: #ffebee;
+            border: 2px solid #ef5350;
+        }
+        .code-box-content.success {
+            background-color: #e8f5e9;
+            border: 2px solid #66bb6a;
+        }
+        .file-path {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        .file-path strong {
+            color: #1976d2;
+            font-size: 15px;
+        }
+        .file-path .filename {
+            color: #0d47a1;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .code-line-error {
+            background-color: #ffcdd2;
+            font-weight: bold;
+            display: block;
+            padding: 2px 4px;
+            border-left: 4px solid #d32f2f;
+        }
+        .code-box-content pre {
+            white-space: pre;
+            overflow-x: auto;
+            background-color: transparent;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Error Detected in Application</h1>
+            <span class="error-badge" th:classappend="'badge-' + ${error.category}">
+                <span th:text="${error.category}">CATEGORY</span>
+            </span>
+        </div>
+
+        <!-- Error Details Section -->
+        <div class="section">
+            <h2>Error Details</h2>
+            <div class="info-grid">
+                <div class="info-label">Error ID:</div>
+                <div class="info-value" th:text="${error.id}">UUID</div>
+
+                <div class="info-label">Exception Type:</div>
+                <div class="info-value" th:text="${error.exceptionType}">NullPointerException</div>
+
+                <div class="info-label">Category:</div>
+                <div class="info-value" th:text="${error.category}">CODE</div>
+
+                <div class="info-label">Timestamp:</div>
+                <div class="info-value" th:text="${#temporals.format(error.detectedAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</div>
+            </div>
+
+            <div class="error-message">
+                <strong>Message:</strong><br>
+                <span th:text="${error.message}">Error message here</span>
+            </div>
+        </div>
+
+        <!-- Fix Suggestions Section -->
+        <div class="section" th:if="${error.fixSuggestion != null}">
+            <h2>
+                Recommended Fix
+                <span class="confidence"
+                      th:classappend="'confidence-' + ${error.fixSuggestion.confidence}"
+                      th:text="${error.fixSuggestion.confidence}">MEDIUM</span>
+            </h2>
+
+            <div class="fix-steps">
+                <h3 th:text="${error.fixSuggestion.summary}">Fix Summary</h3>
+                <ol>
+                    <li th:each="step : ${error.fixSuggestion.steps}" th:text="${step}">Step description</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Code Comparison Section -->
+        <div class="section" th:if="${error.fixSuggestion != null and error.fixSuggestion.sourceContext != null and error.fixSuggestion.sourceContext.surroundingLines != null and !error.fixSuggestion.sourceContext.surroundingLines.isEmpty()}">
+            <h2>📁 Source File & Code Analysis</h2>
+
+            <!-- File Path Display - More Prominent -->
+            <div class="file-path" th:with="pathParts=${#strings.arraySplit(error.fixSuggestion.sourceContext.filePath, '/')}">
+                <div>
+                    <strong>Java File:</strong>
+                    <span class="filename" th:text="${pathParts[pathParts.length - 1]}">TestController.java</span>
+                </div>
+                <div style="margin-top: 8px;">
+                    <strong>Full Path:</strong> <span th:text="${error.fixSuggestion.sourceContext.filePath}">path/to/file.java</span>
+                </div>
+                <div style="margin-top: 5px;">
+                    <strong>Error at Line:</strong> <span style="color: #d32f2f; font-weight: bold; font-size: 15px;" th:text="${error.fixSuggestion.sourceContext.errorLineNumber}">42</span>
+                </div>
+            </div>
+
+            <!-- Code Comparison: Side by Side -->
+            <div class="code-comparison">
+                <!-- Actual Source Code (With Error) -->
+                <div class="code-box">
+                    <div class="code-box-header error">
+                        ❌ Current Code From Your File (With Error)
+                    </div>
+                    <div class="code-box-content error">
+                        <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.4;"><span th:each="line : ${error.fixSuggestion.sourceContext.surroundingLines}" th:class="${#strings.contains(line, '>>>') ? 'code-line-error' : ''}" th:text="${line + '&#10;'}">Code line here</span></pre>
+                    </div>
+                </div>
+
+                <!-- AI-Suggested Fixed Code -->
+                <div class="code-box" th:if="${error.fixSuggestion.fixedCode != null}">
+                    <div class="code-box-header success">
+                        ✅ Recommended Fixed Code (AI Suggestion)
+                    </div>
+                    <div class="code-box-content success">
+                        <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.4;" th:text="${error.fixSuggestion.fixedCode}">Fixed code here</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stack Trace Section -->
+        <div class="section" th:if="${error.stackTrace != null and !error.stackTrace.isEmpty()}">
+            <h2>Stack Trace (Top 10 Frames)</h2>
+            <div class="stack-trace">
+                <div th:each="frame, iterStat : ${error.stackTrace}"
+                     th:if="${iterStat.index < 10}"
+                     class="stack-frame">
+                    at <span th:text="${frame.className}">ClassName</span>.<span th:text="${frame.methodName}">methodName</span>(<span th:text="${frame.fileName}">File.java</span>:<span th:text="${frame.lineNumber}">123</span>)
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>This is an automated notification from Auto-Detect-and-Fix System</p>
+            <p>Error ID: <span th:text="${error.id}">UUID</span></p>
+        </div>
+    </div>
+</body>
+</html>

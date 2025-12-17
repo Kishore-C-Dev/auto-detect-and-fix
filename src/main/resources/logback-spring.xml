@@ -30,6 +30,6 @@
     </root>
 
     <!-- Application Logger -->
-    <logger name="com.example.autodetectandfix" level="DEBUG" />
+    <logger name="com.kc.autodetectandfix" level="DEBUG" />
 
 </configuration>
